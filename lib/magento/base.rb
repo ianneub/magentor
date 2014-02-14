@@ -58,7 +58,7 @@ module Magento
             @attributes[$`]
           end
         else
-          return @attributes[method_name] if @attributes.include?(method_name)
+          return @attributes.include?(method_name) ? @attributes[method_name] : nil
           super
         end
       end
