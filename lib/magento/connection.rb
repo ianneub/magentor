@@ -1,15 +1,32 @@
+# class XMLRPC::Client
+#   def set_debug
+#     @http.set_debug_output($stderr);
+#   end
+# end
+
 module Magento
   class Connection 
     attr_accessor :session, :config, :logger
 
-    def initialize(config = {})
+    def initialize(url, config = {})
       @logger ||= Logger.new(STDOUT)
       @config = config
+      @config[:url] = url
+      
+      uri = URI.parse url
+      @config[:username] = uri.user
+      @config[:api_key] = uri.password
+      @config[:host] = uri.hostname
+      @config[:port] = uri.port
+      @config[:path] = uri.path
       self
     end
 
     def client
-      @client ||= XMLRPC::Client.new(config[:host], config[:path], config[:port])
+      @client ||= XMLRPC::Client.new2(config[:url])
+      # @client.set_debug
+      @client.http_header_extra = {"accept-encoding" => "identity"} # workaround Ruby bug #8182
+      @client
     end
 
     def connect
