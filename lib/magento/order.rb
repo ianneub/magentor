@@ -114,6 +114,32 @@ module Magento
         Magento::OrderItem.new(item)
       end
     end
+
+    def order_line_items
+      hash = {}
+      self.items.collect do |item|
+        item = Magento::OrderItem.new(item)
+        hash[item.id] = item
+        item
+      end
+
+      # filter out items that aren't needed
+      hash.each do |id, item|
+        case item.product_type
+        when "configurable"
+          # use this item's row_total
+          hash.find{|id, i| i.parent_item_id == item.id if i.parent_item_id}[1].row_total = item.row_total
+          
+          # and then delete it, in favor of the simple item
+          hash.delete(id)
+        when "bundle"
+          # just remove bundle items
+          hash.delete(id)
+        end
+      end
+
+      hash
+    end
     
     def shipping_address
       Magento::CustomerAddress.new(@attributes["shipping_address"])
