@@ -4,7 +4,9 @@ module Magento
   # 101  Product not exists.
   # 102  Invalid data given. Details in error message.
   # 103  Product not deleted. Details in error message.
-  class Product < Base  
+  class Product < Base
+    attr_accessor :media
+
     class << self
       # catalog_product.list
       # Retrieve products list by filters
@@ -158,6 +160,11 @@ module Magento
     def update_attributes(attrs)
       attrs.each_pair { |k, v| @attributes[k] = v }
       self.class.update(self.id, attrs)
+    end
+
+    def media
+      @media ||= Magento::ProductMedia.find_by_product_id_or_sku(id)
+      @media
     end
   end
 end
