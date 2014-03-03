@@ -151,6 +151,10 @@ module Magento
     def delete
       self.class.delete(self.id)
     end
+
+    def info
+      Magento::Product.info(id)
+    end
     
     def update_attribute(name, value)
       @attributes[name] = value

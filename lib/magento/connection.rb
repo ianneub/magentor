@@ -1,6 +1,12 @@
-# class XMLRPC::Client
-#   def set_debug
-#     @http.set_debug_output($stderr);
+# module Net
+#   class HTTP
+#     alias_method '__initialize__', 'initialize'
+
+#     def initialize(*args,&block)
+#       __initialize__(*args, &block)
+#     ensure
+#       @debug_output = $stderr ### if ENV['HTTP_DEBUG']
+#     end
 #   end
 # end
 
@@ -24,7 +30,6 @@ module Magento
 
     def client
       @client ||= XMLRPC::Client.new2(config[:url])
-      # @client.set_debug
       @client.http_header_extra = {"accept-encoding" => "identity"} # workaround Ruby bug #8182
       @client
     end
